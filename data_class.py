@@ -28,7 +28,7 @@ class Data(object):
 
     #mutators
     def set_temp1(self, temp1_read):
-        self._temp1 = temp1read
+        self._temp1 = temp1_read
         return self._temp1
 
     def set_temp2(self, temp2_read):

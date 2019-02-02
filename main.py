@@ -9,7 +9,7 @@ import math
 import os.path
 import time
 #from gpiozero import LED
-#from gpiozero import TEMP
+#import therm_control
 #from gpiozero import Button
 from data_class import Data
 import heart_rate_control
