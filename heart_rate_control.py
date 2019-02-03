@@ -13,7 +13,7 @@ from multiprocessing import Process
 
 #LED control function one
 def LED1(pin_num1):
-    led_colour1 = LED(pin_num1)
+    #led_colour1 = LED(pin_num1)
     while True:
         led_colour1.on()
         time.sleep(0.05)
@@ -23,7 +23,7 @@ def LED1(pin_num1):
 
  #LEd control fucntion two       
 def LED2(pin_num2):
-    led_colour2 = LED(pin_num2)
+    #led_colour2 = LED(pin_num2)
     while True:
         led_colour2.on()
         time.sleep(0.05)

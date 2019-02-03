@@ -1,16 +1,14 @@
 """
 Group 24
 DP-3
-Preliminary Python Program
 Main Program File
 """
 #imports
 import math
 import os.path
 import time
-#from gpiozero import LED
-#import therm_control
-#from gpiozero import Button
+import RGB_control
+import therm_control
 from data_class import Data
 import heart_rate_control
 
@@ -30,9 +28,9 @@ complete_name3 = os.path.join(save_path, name_of_file3+".txt")
 
 #variables cretaing the data object
 init_temp1 = 34
-init_temp2 = 34
 init_gsr = 30 #need to modify
 init_heart = 70
+temp_list = []
 
     
 def file_creation(): #creates files containing sensor data
@@ -45,21 +43,24 @@ def file_creation(): #creates files containing sensor data
 
     file3 = open(complete_name3, "w+")
     file3.close()
-    
-def temp_analysis(sensor_data):
-    #comparing temp
-    compared_temp = []
-    temp1 = sensor_data.get_temp1()
-    temp2 = sensor_data.get_temp2()
-    diff = abs(temp1-temp2)
-    compared_temp.append(temp1)
-    compared_temp.append(temp2)
-    if diff > 2.0: #open to change
-        temp_write(diff)
-        difference = diff
+
+def temp_average(sensor_data, temp_sum):
+    #finding a certain deviation form temperature
+    temp = sensor_data.get_temp1()
+    temp_list.append(temp)
+    for i in temp_list:
+        temp_sum += i
+    temp_avg = temp_sum/len(temp_list)
+    temp_avg = 10 #test value
+    return temp_avg
+
+def temp_analysis(temp, sensor_data):
+    temp_difference = abs(sensor_data.get_temp1() - temp)
+    if temp_difference > 2:
+        return temp_difference
     else:
-        difference = None
-    return difference
+        return None
+
 
 #temp writing function
 def temp_write(temp_difference):
@@ -122,31 +123,35 @@ def heart_write(heart_data):
     return x3
     
 def main():
+    #variables
+    temp_sum = 0
     time_value = 0.3
+    #new files
     file_creation()
     pin_num = input("Enter the button pin number: ") #computing prototype purposes only
     print("Only for physical computing type purposes ^^") #remove later
     print(" ")
     #Button_Creation(pin_num)
-    init_data = Data(init_temp1, init_temp2, init_gsr, init_heart)
+    init_data = Data(init_temp1, init_gsr, init_heart)
     x = 30
     xx = 50
     y = 26
     z = 60
+    therm_control.main()
+    s_temp1 = therm_control.read()
     while True:
         #all values below will be read form sensors to creat a new class object
-        """s_temp1 = temp1.read()
-        s_temp2 = temp2.read()
-        s_gsr = GSR.read()
-        s_hbeat = PHOTORESIST.read()"""
+        #s_temp1 = therm_control.read()
+        #s_gsr = GSR.read() #still need to setup GSR sensor code
+        #s_hbeat = PHOTORESIST.read()
         #values meant for testing code:
-        s_temp1 = x
-        s_temp2 = xx
+        #s_temp1 = x
         s_gsr = y
         s_hbeat = z #info will come from heart_rate_control.py
         
-        new_sensor_data = Data(s_temp1, s_temp2, s_gsr, s_hbeat)
-        temp_warning = temp_analysis(new_sensor_data)
+        new_sensor_data = Data(s_temp1, s_gsr, s_hbeat)
+        returned_avg = temp_average(new_sensor_data, 0)
+        temp_warning = temp_analysis(returned_avg, new_sensor_data)
         gsr_warning = gsr_analysis(new_sensor_data)
         heart_warning = heart_analysis(new_sensor_data)
         
@@ -158,8 +163,8 @@ def main():
             time.sleep(time_value)
             print("Remove tight clothing, sit upright, & empty your bladder if possible")
             time.sleep(time_value)
-            avg = (new_sensor_data.get_temp1() + new_sensor_data.get_temp2())/2
-            print("Your current approximate skin temperature is: ", avg, "degrees C")
+            #avg = (new_sensor_data.get_temp1() + new_sensor_data.get_temp2())/2
+            print("Your current approximate skin temperature is: ", returned_avg, "degrees C")
             time.sleep(time_value)
             print("Your current heartrate is approximately: ", new_sensor_data.get_heart(), "BPM")
             time.sleep(time_value)
@@ -169,7 +174,8 @@ def main():
             input() #simulation of pressing button
         else:
             #printing measured data, regardless of value:
-            avg_temp = (new_sensor_data.get_temp1()+new_sensor_data.get_temp2()/2)
+            #avg_temp = (new_sensor_data.get_temp1()+new_sensor_data.get_temp2()/2)
+            avg_temp = temp_average(new_sensor_data, 0)
             current_heart = new_sensor_data.get_heart()
             current_gsr = new_sensor_data.get_gsr()
             print("Your current temperature is: ", avg_temp, "C")
@@ -181,7 +187,7 @@ def main():
             time.sleep(3.5)
  
             
-        x += 0.5 #simulated changes in sensor readings
+        s_temp1 += 1 #simulated changes in sensor readings
         y -= 1 #^^
         z += 5 #^^
         '''button.wait_for_press #not sure if necessary - will need to keep collecting data

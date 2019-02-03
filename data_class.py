@@ -7,9 +7,9 @@ Sensor Data Class
 #none
 class Data(object):
 
-    def __init__(self, temp1, temp2, gsr, heart):
+    def __init__(self, temp1, gsr, heart):
         self._temp1 = temp1
-        self._temp2 = temp2
+        #self._temp2 = temp2
         self._gsr = gsr
         self._heart = heart
 
@@ -17,8 +17,8 @@ class Data(object):
     def get_temp1(self):
         return self._temp1
 
-    def get_temp2(self):
-        return self._temp2
+    '''def get_temp2(self):
+        return self._temp2'''
 
     def get_gsr(self):
         return self._gsr
