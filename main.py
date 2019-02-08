@@ -45,7 +45,7 @@ def file_creation(): #creates files containing sensor data
     file3.close()
 
 def temp_average(sensor_data, temp_sum):
-    #finding a certain deviation form temperature
+    #finding a certain deviation from temperature
     temp = sensor_data.get_temp1()
     temp_list.append(temp)
     for i in temp_list:
